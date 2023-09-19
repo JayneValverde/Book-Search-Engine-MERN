@@ -1,14 +1,19 @@
 // see SignupForm.js for comments
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 
-import { loginUser } from '../utils/API';
+// new for refactor
 import Auth from '../utils/auth';
+import { useMutation } from '@apollo/client';
+import { LOGIN_USER } from '../utils/mutations';
 
 const LoginForm = () => {
   const [userFormData, setUserFormData] = useState({ email: '', password: '' });
   const [validated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  // new code
+  const [loginUser] = useMutation(LOGIN_USER);
+
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -24,17 +29,14 @@ const LoginForm = () => {
       event.preventDefault();
       event.stopPropagation();
     }
-
+    // new code
     try {
-      const response = await loginUser(userFormData);
+      const response = await loginUser({
+        variables: {...userFormData}
+      });
+      console.log(response)
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const { token, user } = await response.json();
-      console.log(user);
-      Auth.login(token);
+      Auth.login(response.data.login.token);
     } catch (err) {
       console.error(err);
       setShowAlert(true);
@@ -66,7 +68,7 @@ const LoginForm = () => {
           <Form.Control.Feedback type='invalid'>Email is required!</Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className='mb-3'>
+        <Form.Group >
           <Form.Label htmlFor='password'>Password</Form.Label>
           <Form.Control
             type='password'
