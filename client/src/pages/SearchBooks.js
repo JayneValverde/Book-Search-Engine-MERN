@@ -8,7 +8,6 @@ import { searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 import { useMutation } from '@apollo/react-hooks';
 import { SAVE_BOOK } from '../utils/mutations';
-import { GET_ME } from '../utils/queries'; 
 
 const SearchBooks = () => {
   // create state for holding returned google api data
@@ -74,12 +73,7 @@ const SearchBooks = () => {
 
     try {
     await saveBook({
-      variables: {book: bookToSave},
-      update: cache => {
-        const {me} = cache.readQuery({ query: GET_ME });
-
-        cache.writeQuery({ quer: GET_ME, data: {me: { ...me, savedBooks: [...me.savedBooks, bookToSave] } } })
-      }
+      variables: { newBook: {...bookToSave} },
     });
 
       // if book successfully saves to user's account, save book id to state
