@@ -1,6 +1,6 @@
 // React setup
 import React from 'react';
-import { Container, Col, Row, Card, Button } from 'react-bootstrap';
+import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
 // import the 'auth' setup
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
@@ -45,19 +45,18 @@ const SavedBooks = () => {
 
   return (
     <>
-      <div fluid className='text-light bg-dark p-5'>
+      <Jumbotron fluid className='text-light bg-dark'>
         <Container>
           <h1>Viewing saved books!</h1>
         </Container>
-      </div>
+      </Jumbotron>
       <Container>
-        <h2 className='pt-5'>
+        <h2>
           {userData.savedBooks.length
             ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>
-        <Row>
-          <Col md="4">
+        <CardColumns>
             {userData.savedBooks.map((book) => {
               return (
                   <Card key={book.bookId} border='dark'>
@@ -73,8 +72,7 @@ const SavedBooks = () => {
                   </Card>
               );
             })} 
-          </Col>
-        </Row>
+        </CardColumns>
       </Container>
     </>
   );
