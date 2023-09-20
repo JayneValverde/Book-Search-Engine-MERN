@@ -1,19 +1,17 @@
 const express = require('express');
 const path = require('path');
 const db = require('./config/connection');
+
+// import ApolloServer
 const { ApolloServer } = require('apollo-server-express');
 const { authMiddleware } = require('./utils/auth');
-const { typeDefs,resolvers } = require('./schemas');
+
+// import typeDefs and Resolvers
+const { typeDefs, resolvers } = require('./schemas');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
-const server = new ApolloServer({
-  typeDefs, 
-  resolvers,
-  context: authMiddleware,
-});
-
-app.use(express.urlencoded({ extended: false }));
+// add express middleware
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // if we're in production, serve client/build as static assets
@@ -25,9 +23,19 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'))
 });
 
+const PORT = process.env.PORT || 3001
+
+const server = new ApolloServer({
+  typeDefs, 
+  resolvers,
+  context: authMiddleware,
+});
+
 // Create a new instance of an Apollo Server with the GraphQL schema
-const startApolloServer = async (typeDefs, resolvers) => {
+const startApolloServer = async () => {
   await server.start();
+  
+  // integrate the Apollo server with the Express application as middlware
   server.applyMiddleware({ app });
 
   db.once('open', () => {
@@ -39,4 +47,4 @@ const startApolloServer = async (typeDefs, resolvers) => {
 };
 
 // Call the async funciton to start the server
-startApolloServer(typeDefs, resolvers);
+startApolloServer();

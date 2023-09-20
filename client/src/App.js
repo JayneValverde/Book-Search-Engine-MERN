@@ -25,7 +25,6 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const client = new ApolloClient({
-  // Set up client to execute the 'authLink' middleware prior to making the request to our GraphQL API
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
@@ -38,9 +37,9 @@ function App() {
         <>
           <Navbar />
           <Switch>
-            <Route exact path='/' component={SearchBooks} />
-            <Route exact path='/saved' component={SavedBooks} />
-            <Route render={() => <h1 className='display-2'>Wrong page!</h1>} />
+            <Route path='/' element={<SearchBooks />} />
+            <Route path='/saved' elementt={<SavedBooks />} />
+            <Route path='*' element={<h1 className='display-2'>Wrong page!</h1>} />
           </Switch>
         </>
       </Router>
