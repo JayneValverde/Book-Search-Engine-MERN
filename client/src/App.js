@@ -37,8 +37,8 @@ function App() {
         <>
           <Navbar />
           <Switch>
-            <Route path='/' element={<SearchBooks />} />
-            <Route path='/saved' elementt={<SavedBooks />} />
+            <Route path='/' component={SearchBooks} />
+            <Route path='/saved' component={SavedBooks} />
             <Route path='*' element={<h1 className='display-2'>Wrong page!</h1>} />
           </Switch>
         </>
