@@ -5,26 +5,28 @@ const { signToken } = require('../utils/auth');
 const resolvers = { 
     Query: {
         me: async (parent, args, context) => {
-            console.log(context.user)
+            // checks if users exist
             if (context.user) {
-                data = await User.findOne({ _id: context.user._id }).select('__v - password');
-                return data;
-            }
-            throw new AuthenticationError("Must be logged in!")
+                const userdata = await User.findOne({ _id: context.user._id }).select(
+                    '__v - password'
+                    );
+                    return userdata;
+                }
+                throw new AuthenticationError("Must be logged in!")
         },
     },
     Mutation: {
         login: async (parent, { email, password } ) => {
             const user = await User.findOne({ email });
-            
+            // check if user exists with email and credentials
             if (!user) {
                 throw new AuthenticationError("User not found");
             }
-            const isCorrectPassword = await user.isCorrectPassword(password);
-            console.log(!isCorrectPassword);
-            if (!isCorrectPassword) {
+            const correctPassword = await user.isCorrectPassword(password);
 
-                throw new Error("Incorrect credentials");
+            // check password
+            if (!correctPassword) {
+                throw new AuthenticationError("Incorrect credentials");
             }
             const token = signToken(user);
             return { token, user };
@@ -32,11 +34,12 @@ const resolvers = {
         addUser: async (parent, { username, email, password }) => {
             const user = await User.create({ username, email, password });
             const token = signToken(user);
+
             return { token, user };
         },
         saveBook: async (parent, { newBook }, context) => {
             if (context.user) {
-                const updatedUser = await User.findByIdAndUpdate(
+                const updatedUser = await User.findOneAndUpdate(
                     {_id: context.user._id,},
                     { $push: { savedBooks: newBook }},
                     { new: true }
@@ -47,7 +50,7 @@ const resolvers = {
         },
         removeBook: async (parent, { bookId }, context) => {
             if (context.user){
-                const updatedUser = await User.findByIdAndDelete(
+                const updatedUser = await User.findOneAndUpdate(
                     {_id: context.user._id},
                     { $pull: { savedBooks: { bookId }}},
                     { new: true }
