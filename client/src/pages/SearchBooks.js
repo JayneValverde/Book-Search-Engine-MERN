@@ -51,8 +51,9 @@ const SearchBooks = () => {
         description: book.volumeInfo.description,
         image: book.volumeInfo.imageLinks?.thumbnail || '',
       }));
-
+      // save searched books to react State
       setSearchedBooks(bookData);
+      // clear the search input field
       setSearchInput('');
     } catch (err) {
       console.error(err);
